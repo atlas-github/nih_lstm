@@ -1,40 +1,40 @@
-# Introduction to Deep Learning
+# 1. Introduction to Deep Learning
 
-# Environment Setup
+# 2. Environment Setup
 ## Installing and configuring Python
 ## Essential libraries for ML/DL (NumPy, Pandas, Matplotlib, TensorFlow, etc.)
 
-# Introduction to TensorFlow
+# 3. Introduction to TensorFlow
 ## Understanding tensors in TensorFlow
 
-# Neural Networks
+# 4. Neural Networks
 ## Structure and function of neural networks
 ## Gradient descent optimization
 
-# Building Neural Networks
+# 5. Building Neural Networks
 ## Implementing simple feedforward networks
 
-# Convolutional Neural Networks (CNN)
+# 6. Convolutional Neural Networks (CNN)
 ## Using CNN for image recognition
 
-# Recurrent Neural Networks (RNN)
+# 7. Recurrent Neural Networks (RNN)
 ## Understanding RNN for sequential data processing
 
-# Hands-On Exercises
+# 8. Hands-On Exercises
 
-# LSTM Architecture
+# 9. LSTM Architecture
 ## Addressing the vanishing gradient problem
 ## LSTM model structure and function
 
-# Practical Implementation
+# 10. Practical Implementation
 ## Building LSTM models using TensorFlow
 ## Training LSTM on a time series dataset for dengue cases
 ## Developing a dengue forecasting model
 
-# Model Evaluation and Deployment
+# 11. Model Evaluation and Deployment
 ## Evaluating model performance using appropriate metrics
 ## Deploying the trained LSTM model
 
-# Advanced Techniques
+# 12. Advanced Techniques
 ## Model ensembling
 ## Hyperparameter tuning
