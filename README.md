@@ -38,3 +38,6 @@
 # 12. Advanced Techniques
 ## Model ensembling
 ## Hyperparameter tuning
+
+# Others
+## Hugging Face Transformer
