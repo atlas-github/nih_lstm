@@ -316,7 +316,7 @@ The update rule for a weight $w$ and bias $b$ is:
 
 $$ w_\left(new\right) = w_\left(old\right) - α\frac{δL}{δw}$$
 
-$$ b_\left(new\right) = B_\left(old\right) - α\frac{δL}{δw}$$
+$$ b_\left(new\right) = b_\left(old\right) - α\frac{δL}{δw}$$
 
 where $L$ is the loss function.
 
