@@ -13,6 +13,25 @@ Instead of relying on manually engineered features, deep learning models learn t
 | Interpretability	| Models are often more interpretable (easier to understand why a decision was made).	| Models can be a "black box," making interpretability challenging. |
 | Problem Domain	| Effective for a wide range of tasks, especially with well-defined features.	| Excels in complex tasks like image recognition, natural language processing, and speech recognition where feature engineering is difficult. |
 
+Refer to [1. Difference between Machine Learning and Deep Learning.ipynb](https://github.com/atlas-github/nih_lstm/blob/main/1_Difference_between_Machine_Learning_and_Deep_Learning.ipynb) to see the difference at code level.
+
+graph TD
+    A[Artificial Intelligence (AI)] --> B(Machine Learning (ML));
+    B --> C(Deep Learning (DL));
+    B --> D(Other ML Techniques e.g.,
+       Support Vector Machines,
+       Decision Trees,
+       Naive Bayes,
+       Linear Regression,
+       Clustering Algorithms);
+    C --> E[Neural Networks with Multiple Layers];
+    E --> F(Convolutional Neural Networks (CNNs));
+    E --> G(Recurrent Neural Networks (RNNs));
+    G --> H(Long Short-Term Memory Networks (LSTMs));
+    C --> I[Feature Learning (Automatic Feature Extraction)];
+    B -- Requires Feature Engineering (Often Manual) --> D;
+    C -- Learns Features Automatically --> E;
+
 # 2. Environment Setup
 ## Installing and configuring Python
 ## Essential libraries for ML/DL (NumPy, Pandas, Matplotlib, TensorFlow, etc.)
