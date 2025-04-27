@@ -17,8 +17,8 @@ Refer to [1. Difference between Machine Learning and Deep Learning.ipynb](https:
 
 ```mermaid
 graph TD
-    A(Artificial_Intelligence_(AI)) --> B(Machine_Learning_(ML));
-    B --> C(Deep_Learning_(DL));
+    A(Artificial_Intelligence) --> B(Machine_Learning);
+    B --> C(Deep_Learning);
     B --> D[Other_ML_Techniques];
     C --> E[Neural_Networks_with_Multiple Layers];
     E --> F(CNNs);
