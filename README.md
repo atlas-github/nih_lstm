@@ -213,8 +213,140 @@ In machine learning, data is often represented in multi-dimensional arrays. For 
 3. Time series data can be a 3D tensor (batch size, time steps, features).
 
 # 4. Neural Networks
+
+Think of a neural network as a complex function approximator. Given an input, it processes it through multiple layers of interconnected nodes (neurons) to produce an output. The "learning" in neural networks happens by adjusting the connections (weights) between these neurons based on the data they are trained on.
+
+Key Concepts:
+1. Nodes (Neurons): The basic processing units of a neural network. They receive input, perform a computation, and produce an output.
+2. Connections (Weights): Numerical values associated with the connections between neurons. These weights determine the strength of the influence one neuron has on another.
+3. Layers: Neurons are typically organized into layers: an input layer, one or more hidden layers, and an output layer.
+4. Activation Functions: Non-linear functions applied to the output of each neuron. These functions introduce non-linearity, allowing the network to learn complex patterns.
+
+Why are they powerful?
+1. Non-linearity: Activation functions enable neural networks to model complex, non-linear relationships in data.
+2. Feature Learning: Hidden layers can automatically learn relevant features from the input data, eliminating the need for manual feature engineering in many cases.
+3. Scalability: With enough data and computational resources, larger neural networks can learn highly intricate patterns.
+
 ## Structure and function of neural networks
+
+A typical feedforward neural network consists of:
+
+1. Input Layer: Receives the raw input data. The number of neurons in this layer corresponds to the number of input features.
+2. Hidden Layers: One or more layers between the input and output layers. These layers perform the core computations and feature extraction. The number of hidden layers and the number of neurons in each hidden layer are architectural choices.
+3. Output Layer: Produces the final output of the network. The number of neurons in this layer depends on the task (e.g., one neuron for binary classification, multiple neurons for multi-class classification or regression).   
+
+Function:
+
+Information flows through the network in a forward direction, from the input layer to the output layer. Here's what happens at each neuron in a hidden or output layer:
+
+1. Weighted Sum of Inputs: Each neuron receives inputs from the neurons in the previous layer. Each input is multiplied by its corresponding weight.
+2. Bias Addition: A bias term (an additional parameter) is added to the weighted sum. This allows the neuron to be activated even when all inputs are zero.
+3. Activation Function: The result of the weighted sum plus bias is passed through an activation function. This introduces non-linearity and determines the output of the neuron.
+
+Mathematically , for a neuron $j$ in a layer $l$, the output $a_j^\left(l\right)$ can be expressed as:
+
+$$ z_j^\left(l\right) = \sum_{i} w_\left(ji\right)^\left(l\right)*a_i^\left(l-1\right) + b_j^\left(l\right)$$
+
+$$ a_j^\left(l\right) = f(z_j^\left(l\right))$$
+
+where:
+1. $a_i^\left(l-1\right)$ is the activation of the $i$-th neuron in the previous layer $(l-1)$
+2. $w_\left(ji\right)^\left(l\right)$ is the weight connecting the $i$-th neuron in the previous layer to the $j$-th neuron in the current layer $l$
+3. $b_j^\left(l\right)$ is the bias of the $j$-th neuron in the current layer $l$
+4. $f$ is the activation function
+5. $z_j^\left(l\right)$ is the weighted sum of inputs plus bias
+
+```
+import numpy as np
+
+def sigmoid(x):
+  """The sigmoid activation function."""
+  return 1 / (1 + np.exp(-x))
+
+def forward_pass(input_data, weights, biases):
+  """Performs a forward pass through a simple two-layer network."""
+  # Hidden layer
+  hidden_layer_input = np.dot(input_data, weights['hidden']) + biases['hidden']
+  hidden_layer_output = sigmoid(hidden_layer_input)
+
+  # Output layer
+  output_layer_input = np.dot(hidden_layer_output, weights['output']) + biases['output']
+  output_layer_output = sigmoid(output_layer_input)
+
+  return output_layer_output
+
+# Example usage:
+input_size = 3
+hidden_size = 4
+output_size = 1
+num_samples = 2
+
+# Initialize random weights and biases
+weights = {
+    'hidden': np.random.rand(input_size, hidden_size),
+    'output': np.random.rand(hidden_size, output_size)
+}
+biases = {
+    'hidden': np.random.rand(hidden_size),
+    'output': np.random.rand(output_size)
+}
+
+# Example input data
+input_data = np.random.rand(num_samples, input_size)
+
+# Perform forward pass
+output = forward_pass(input_data, weights, biases)
+print("Input Data:\n", input_data)
+print("\nOutput:\n", output)
+```
+
 ## Gradient descent optimization
+
+The goal of training a neural network is to find the set of weights and biases that minimize a loss function. The loss function quantifies the difference between the network's predictions and the actual target values in the training data. 
+
+Gradient descent is an iterative optimization algorithm used to find the minimum of a function. In the context of neural networks, this function is the loss function, and the parameters we want to optimize are the weights and biases.
+
+The algorithm works by:
+
+1. Calculating the Gradient: Computing the gradient of the loss function with respect to each weight and bias. The gradient indicates the direction of the steepest increase in the loss.
+2. Updating Parameters: Adjusting the weights and biases in the opposite direction of the gradient. This moves the parameters towards a lower value of the loss function.
+3. Learning Rate: A crucial hyperparameter called the learning rate (α) controls the step size taken during each parameter update. A small learning rate can lead to slow convergence, while a large learning rate might cause the algorithm to overshoot the minimum.
+
+The update rule for a weight $w$ and bias $b$ is:
+
+$$ w_\left(new\right) = w_\left(old\right) - α\frac{δL}{δw}$$
+
+$$ b_\left(new\right) = B_\left(old\right) - α\frac{δL}{δw}$$
+
+where $L$ is the loss function.
+
+To efficiently calculate the gradients of the loss function with respect to all the weights and biases in a neural network, we use an algorithm called backpropagation. Backpropagation uses the chain rule of calculus to propagate the error from the output layer back through the network, calculating the contribution of each weight and bias to the overall error.
+
+Let's consider a very simple case of optimizing a single parameter to minimize a simple quadratic loss function.
+
+```
+def loss_function(w):
+  """A simple quadratic loss function."""
+  return (w - 2)**2
+
+def gradient(w):
+  """The gradient of the loss function."""
+  return 2 * (w - 2)
+
+# Initial guess for the parameter
+w = 0.0
+learning_rate = 0.1
+num_iterations = 5
+
+print(f"Initial w: {w}, Loss: {loss_function(w)}")
+
+for i in range(num_iterations):
+  grad_w = gradient(w)
+  w = w - learning_rate * grad_w
+  print(f"Iteration {i+1}: w = {w:.4f}, Loss = {loss_function(w):.4f}")
+```
+In a real neural network, the loss function is much more complex, and backpropagation is used to calculate the gradients with respect to all the weights and biases. Libraries like TensorFlow and PyTorch automate this process, making it much easier to train complex neural networks.
+
 
 # 5. Building Neural Networks
 ## Implementing simple feedforward networks
