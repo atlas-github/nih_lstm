@@ -41,7 +41,87 @@ graph TD
 
 # 2. Environment Setup
 ## Installing and configuring Python
+
+### Part 1: Installing Python and Essential Libraries (for Local Setup)
+
+These steps are for setting up Python on your local machine. If you plan to primarily use Google Colab, you can largely skip this section as Python and many necessary libraries are pre-installed there.
+
+Install Python:
+1. Go to the official Python website: https://www.python.org/downloads/
+2. Download the latest stable version of Python 3.
+3. Run the installer. **Crucially, make sure to check the box that says "Add Python to PATH" during the installation.** This allows you to run Python from your command prompt or terminal.
+4. Follow the on-screen instructions to complete the installation.
+5. Open your command prompt (Windows) or terminal (macOS/Linux).
+6. Type `python --version` or `python3 --version` and press Enter. You should see the Python version you installed.   
+7. Type `pip --version` and press Enter. `pip` is the package installer for Python, which you'll use to install libraries. If you don't see a version, you might need to reinstall Python and ensure "Add Python to PATH" was checked.
+
+Install Essential Libraries:
+1. Open your command prompt or terminal.
+2. Run the following command to install core libraries for data science and machine learning: `pip install numpy pandas matplotlib scikit-learn`
+3. **NumPy**: For numerical computations and array manipulation.
+4. **Pandas**: For data analysis and working with DataFrames.
+5. **Matplotlib**: For creating plots and visualizations.
+6. **Scikit-learn**: For various machine learning algorithms and tools.
+
+Run the following command to install TensorFlow (a popular deep learning framework): `pip install tensorflow`
+
+For GPU support with TensorFlow (requires compatible NVIDIA GPU and drivers), you might need to install the GPU version: `pip install tensorflow[tensorflow-gpu]`
+
+Run the following command to install Keras (a high-level API for building neural networks, often used with TensorFlow): `pip install keras`
+
+### Part 2: Setting up Jupyter Notebook (Local Environment)
+
+Jupyter Notebook provides an interactive environment for writing and running Python code, making it excellent for workshops and experimentation.
+
+1. Open your command prompt or terminal.
+2. Run the command: `pip install notebook`
+3. Open your command prompt or terminal.
+4. Navigate to the directory where you want to store your notebooks (or simply stay in your user directory).
+5. Run the command: `jupyter notebook`
+6. This will open a new tab in your web browser with the Jupyter Notebook interface. You can create new Python 3 notebooks by clicking the "New" dropdown in the top right and selecting "Python 3 (ipykernel)".
+
+### Part 3: Using Google Colab (Cloud Environment)
+
+Google Colaboratory (Colab) is a free, cloud-based Jupyter Notebook environment that requires no setup and provides free access to GPUs (for limited usage). This is often the easiest way to get started for workshops, especially if participants have varying local setups.
+
+1. Open your web browser and go to: https://colab.research.google.com/. You will need a Google account to use Colab.
+2. On the Colab welcome page, you can choose to create a "New notebook" or open existing notebooks from your Google Drive or GitHub.
+3. Colab comes with Python and many common data science and machine learning libraries (including NumPy, Pandas, Matplotlib, Scikit-learn, TensorFlow, and Keras) pre-installed. You usually don't need to install them explicitly.
+4. In a Colab notebook cell, you can run commands like:
+
+```
+    import tensorflow as tf
+    print("TensorFlow version:", tf.version)
+
+    import keras
+    print("Keras version:", keras.__version__)
+
+    import numpy as np
+    print("NumPy version:", np.__version__)
+
+    import pandas as pd
+    print("Pandas version:", pd.__version__)
+
+    import sklearn
+    print("Scikit-learn version:", sklearn.__version__)
+
+    import matplotlib.pyplot as plt
+    print("Matplotlib version:", plt.__version__)
+    ```
+    This helps you verify the versions of the libraries you'll be using.
+```
+
+5. Colab offers free GPU acceleration. To enable it for a notebook, go to "Runtime" in the menu bar.
+6. Select "Change runtime type".
+7. Under "Hardware accelerator," choose "GPU" and click "Save."
+8. You can verify if a GPU is being used with the following code in a notebook cell:
+
+```
+import tensorflow as tf
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+
 ## Essential libraries for ML/DL (NumPy, Pandas, Matplotlib, TensorFlow, etc.)
+```
 
 # 3. Introduction to TensorFlow
 ## Understanding tensors in TensorFlow
