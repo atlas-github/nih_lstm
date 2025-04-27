@@ -15,6 +15,7 @@ Instead of relying on manually engineered features, deep learning models learn t
 
 Refer to [1. Difference between Machine Learning and Deep Learning.ipynb](https://github.com/atlas-github/nih_lstm/blob/main/1_Difference_between_Machine_Learning_and_Deep_Learning.ipynb) to see the difference at code level.
 
+```mermaid
 graph TD
     A[Artificial Intelligence (AI)] --> B(Machine Learning (ML));
     B --> C(Deep Learning (DL));
@@ -31,6 +32,7 @@ graph TD
     C --> I[Feature Learning (Automatic Feature Extraction)];
     B -- Requires Feature Engineering (Often Manual) --> D;
     C -- Learns Features Automatically --> E;
+```
 
 # 2. Environment Setup
 ## Installing and configuring Python
