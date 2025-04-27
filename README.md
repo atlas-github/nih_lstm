@@ -17,28 +17,16 @@ Refer to [1. Difference between Machine Learning and Deep Learning.ipynb](https:
 
 ```mermaid
 graph TD
-    A[Artificial Intelligence (AI)] --> B(Machine Learning (ML));
+    A(Artificial Intelligence (AI)) --> B(Machine Learning (ML));
     B --> C(Deep Learning (DL));
-    B --> D(Other ML Techniques);
-    subgraph Examples of Other ML Techniques
-        D1[Support Vector Machines];
-        D2[Decision Trees];
-        D3[Naive Bayes];
-        D4[Linear Regression];
-        D5[Clustering Algorithms];
-        D --> D1;
-        D --> D2;
-        D --> D3;
-        D --> D4;
-        D --> D5;
-    end
+    B --> D[Other ML Techniques];
     C --> E[Neural Networks with Multiple Layers];
-    E --> F(Convolutional Neural Networks (CNNs));
-    E --> G(Recurrent Neural Networks (RNNs));
-    G --> H(Long Short-Term Memory Networks (LSTMs));
-    C --> I[Feature Learning (Automatic Feature Extraction)];
-    B -- Requires Feature Engineering (Often Manual) --> D;
-    C -- Learns Features Automatically --> E;
+    E --> F(CNNs);
+    E --> G(RNNs);
+    G --> H(LSTMs);
+    C --> I(Automatic Feature Extraction);
+    B -- Manual Feature Engineering --> D;
+    C -- Learns Features --> E;
 ```
 
 # 2. Environment Setup
