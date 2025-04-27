@@ -1,5 +1,18 @@
 # 1. Introduction to Deep Learning
 
+Deep learning is a subfield of machine learning that uses artificial neural networks with multiple layers (hence, "deep") to progressively extract higher-level features from raw input data.
+
+Instead of relying on manually engineered features, deep learning models learn these features automatically from the data itself.
+
+| Feature	| Traditional Machine Learning |	Deep Learning |
+| -------	| ---------------------------- |	------------- |
+| Feature Engineering	| Often requires manual identification and extraction of relevant features from the data.	| Learns features automatically from raw data through multiple layers. |
+| Data Dependency	| Performs well on smaller datasets. Performance plateaus as data size increases.	| Performance often improves significantly with larger datasets. |
+| Complexity	| Typically involves simpler models with fewer layers.	| Employs complex models with many layers (deep neural networks). |
+| Computational Cost	| Relatively lower computational requirements.	| Significantly higher computational requirements due to the number of parameters. |
+| Interpretability	| Models are often more interpretable (easier to understand why a decision was made).	| Models can be a "black box," making interpretability challenging. |
+| Problem Domain	| Effective for a wide range of tasks, especially with well-defined features.	| Excels in complex tasks like image recognition, natural language processing, and speech recognition where feature engineering is difficult. |
+
 # 2. Environment Setup
 ## Installing and configuring Python
 ## Essential libraries for ML/DL (NumPy, Pandas, Matplotlib, TensorFlow, etc.)
