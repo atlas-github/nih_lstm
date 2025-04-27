@@ -243,7 +243,7 @@ Information flows through the network in a forward direction, from the input lay
 2. Bias Addition: A bias term (an additional parameter) is added to the weighted sum. This allows the neuron to be activated even when all inputs are zero.
 3. Activation Function: The result of the weighted sum plus bias is passed through an activation function. This introduces non-linearity and determines the output of the neuron.
 
-Mathematically , for a neuron $j$ in a layer $l$, the output $a_j^\left(l\right)$ can be expressed as:
+Mathematically, for a neuron $j$ in a layer $l$, the output $a_j^\left(l\right)$ can be expressed as:
 
 $$ z_j^\left(l\right) = \sum_{i} w_\left(ji\right)^\left(l\right)*a_i^\left(l-1\right) + b_j^\left(l\right)$$
 
@@ -656,9 +656,117 @@ Imagine a standard feedforward neural network. Information flows in one directio
 
 RNNs are a type of neural network designed specifically to process sequential data. This means data where the order matters, like time series, natural language, audio, and video. Unlike traditional neural networks that treat each input independently, RNNs maintain an internal state (memory) that captures information about the sequence seen so far.
 
+Here's a breakdown of the key concepts:
+1. Sequential Data: Data points that are dependent on each other and have a specific order. Think of words in a sentence – their meaning depends on the words that came before them.
+2. Internal State (Memory): RNNs have a hidden state that acts as a memory. This state is updated as the network processes each element in the sequence, carrying relevant information forward in time.
+3. Recurrent Connection: The core of an RNN is the recurrent connection. The output of the hidden layer at one time step is fed back into the hidden layer at the next time step. This allows the network to learn dependencies across the sequence.
+4. Time Steps: A sequence is processed step by step. At each time step, the RNN receives one element of the sequence and updates its hidden state based on the current input and the previous hidden state.
 
+This Python code snippet illustrates the basic structure conceptually (note that actual RNN layers in libraries like TensorFlow or PyTorch are more optimized):
+
+```
+def simple_rnn_step(input_t, previous_hidden_state, weight_ih, weight_hh, bias_h):
+    """
+    A single time step of a simple RNN.
+    """
+    # Input to hidden state
+    hidden_input = np.dot(input_t, weight_ih)
+    # Hidden state to hidden state (recurrent connection)
+    hidden_previous = np.dot(previous_hidden_state, weight_hh)
+    # Combine and apply activation function (e.g., tanh)
+    next_hidden_state = np.tanh(hidden_input + hidden_previous + bias_h)
+    return next_hidden_state
+
+# Example usage:
+import numpy as np
+
+# Define network parameters
+input_size = 4
+hidden_size = 3
+weight_ih = np.random.randn(input_size, hidden_size)
+weight_hh = np.random.randn(hidden_size, hidden_size)
+bias_h = np.zeros((1, hidden_size))
+
+# Example sequence of inputs
+input_sequence = [np.random.randn(input_size) for _ in range(5)]
+
+# Initialize hidden state
+hidden_state = np.zeros((1, hidden_size))
+
+# Process the sequence
+hidden_states = []
+for input_t in input_sequence:
+    hidden_state = simple_rnn_step(input_t, hidden_state, weight_ih, weight_hh, bias_h)
+    hidden_states.append(hidden_state)
+
+print("Hidden states over time:", hidden_states)
+```
+This code shows how the hidden state evolves as the RNN processes each element of the `input_sequence`. The `previous_hidden_state` is crucial as it carries information from earlier time steps.
 
 ## Understanding RNN for sequential data processing
+
+RNNs excel at processing sequential data by leveraging their internal memory to understand context and dependencies. Here's how they achieve this:
+
+1. Input Encoding: Each element of the input sequence (e.g., a word in a sentence, a sensor reading at a specific time) is typically represented as a vector. This could be a one-hot encoding, word embeddings, or simply the raw numerical value.
+
+2. Iterative Processing: The RNN processes the sequence one element at a time (at each time step).
+
+3. Hidden State Update: At each time step (t), the hidden state (h_t) is calculated based on two inputs:
+   - The current input (x_t).
+   - The previous hidden state (h_{t-1}) (which contains information about the sequence up to the previous time step).
+   - The update rule typically involves a weight matrix for the input ((W_{ih})), a weight matrix for the previous hidden state ((W_{hh})), a bias term ((b_h)), and an activation function (like tanh or ReLU):
+
+$$ h_t = tanh\left(W_\left(ih\right)*x_t + W_\left(hh\right)*h_\left(t-1\right) + b_h\right)$$
+     
+4. Output Generation (Optional): At each time step, the RNN can also produce an output (y_t) based on the current hidden state:
+
+$$ y_t = W_\left(ho\right)*h_t + b_o$$
+
+   - where (W_{ho}) is the weight matrix for the hidden-to-output connection and (b_o) is the output bias. The output can be used for various tasks, such as predicting the next element in the sequence, classifying the sequence, or generating a new sequence.
+5. Learning Dependencies: Through training with labeled sequential data, the RNN learns the optimal weights ((W_{ih}), (W_{hh}), (W_{ho})) and biases ((b_h), (b_o)) that allow it to capture the underlying patterns and dependencies in the sequence. For example, in natural language processing, the RNN learns which words are likely to follow other words.
+
+This Python code snippet uses a basic RNN layer from the `tensorflow` library to illustrate sequential data processing:
+
+```
+import tensorflow as tf
+from tensorflow.keras.layers import SimpleRNN, Embedding, Dense
+from tensorflow.keras.models import Sequential
+
+# Example sequence data (representing words as integers)
+sequences = [[1, 2, 3], [4, 5], [6, 7, 8, 9]]
+max_len = max(len(seq) for seq in sequences)
+padded_sequences = tf.keras.preprocessing.sequence.pad_sequences(sequences, maxlen=max_len)
+
+# Vocabulary size (number of unique words + padding token)
+vocab_size = 10
+embedding_dim = 8
+rnn_units = 16
+
+# Define the RNN model
+model = Sequential([
+    Embedding(vocab_size, embedding_dim, input_length=max_len),
+    SimpleRNN(rnn_units),
+    Dense(vocab_size, activation='softmax') # Output layer for prediction
+])
+
+# Compile the model
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Print the model summary
+model.summary()
+
+# Example of processing the padded sequences
+# Note: This is just a forward pass, not training
+output = model.predict(padded_sequences)
+print("Output shape:", output.shape)
+```
+`Embedding` layer converts the integer representations of words into dense vector representations.
+`SimpleRNN` layer is the core RNN layer that processes the embedded sequence and maintains a hidden state.
+`Dense` layer is a standard fully connected layer used here for prediction (e.g., predicting the next word in a sequence).
+
+This is how an RNN can take a sequence as input, process it step by step, and produce an output based on the learned sequential patterns. The internal hidden state of the `SimpleRNN` layer is crucial for remembering information across the time steps of the input sequence.
+
+Basic RNNs can struggle with long-range dependencies due to the vanishing/exploding gradient problem. More advanced architectures like LSTMs and GRUs were developed to address these limitations and are more commonly used in practice for complex sequential tasks.
 
 # 8. Hands-On Exercises 
 
