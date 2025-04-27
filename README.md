@@ -19,12 +19,19 @@ Refer to [1. Difference between Machine Learning and Deep Learning.ipynb](https:
 graph TD
     A[Artificial Intelligence (AI)] --> B(Machine Learning (ML));
     B --> C(Deep Learning (DL));
-    B --> D(Other ML Techniques e.g.,
-       Support Vector Machines,
-       Decision Trees,
-       Naive Bayes,
-       Linear Regression,
-       Clustering Algorithms);
+    B --> D(Other ML Techniques);
+    subgraph Examples of Other ML Techniques
+        D1[Support Vector Machines];
+        D2[Decision Trees];
+        D3[Naive Bayes];
+        D4[Linear Regression];
+        D5[Clustering Algorithms];
+        D --> D1;
+        D --> D2;
+        D --> D3;
+        D --> D4;
+        D --> D5;
+    end
     C --> E[Neural Networks with Multiple Layers];
     E --> F(Convolutional Neural Networks (CNNs));
     E --> G(Recurrent Neural Networks (RNNs));
