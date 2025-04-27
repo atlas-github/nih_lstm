@@ -773,8 +773,135 @@ Basic RNNs can struggle with long-range dependencies due to the vanishing/explod
 ##### TO BE FILLED IN #####
 
 # 9. LSTM Architecture
+
+Imagine a standard Recurrent Neural Network (RNN) trying to remember information over long sequences. It's like trying to recall the beginning of a long story by the time you reach the end – the early parts often get lost in the "memory fade." LSTMs were cleverly designed to combat this short-term memory limitation of vanilla RNNs.
+
+The core idea behind an LSTM is the introduction of a cell state (often denoted as $c_t$). Think of the cell state as a conveyor belt that runs straight through the entire sequence, carrying relevant information. This allows information to flow through the network without being constantly transformed by the non-linearities within the recurrent units.
+
+Within each LSTM cell, instead of a single recurrent layer, there are three key interacting components called gates:
+
+1. **Forget Gate**: This gate decides what information to discard from the cell state. It looks at the previous hidden state ($h_\left(t-1\right)$) and the current input ($x_t$) and outputs a number between 0 and 1 for each number in the cell state. A value close to 0 means "forget this entirely," while a value close to 1 means "keep this as it is."
+
+Mathematically, the forget gate ($f_t$) is calculated as:
+
+$$ f_t = σ\left( W_f[h_\left(t-1\right), x_t] + b_f\right) $$
+
+where σ is the sigmoid funciton, $W_f$ is the weight matrix for the forget gate, and $b_f$ is the bias term.
+
+2. **Input Gate**: This gate decides what new information from the current input to store in the cell state. It has two parts:
+   - A sigmoid layer that decides which values from the input to update ($i_t$)
+   - A $tanh$ layer that creates a new candidate vector ($\bar{C_t}$) that could be added to the cell state.
+
+The input date components are calculated as:
+
+$$ i_t = σ\left( W_i[h_\left(t-1\right), x_t] + b_i\right) $$
+
+$$ \bar{C_t} = tanh\left( W_C[h_\left(t-1\right), x_t] + b_C\right) $$
+
+where $W_i$, $b_i$, $W_c$, and $b_C$ are the respective weight matrices and bias terms.
+
+3. **Output Gate**: This gate decides what information to output as the hidden state ($h_t$). It also has two parts:
+   - A sigmoid layer that decides which parts of the cell state to output ($o_t$).
+   - The cell state is passed through a tanh function to put the values between -1 and 1. This is then multiplied element-wise by the output of the sigmoid gate.
+
+The output gate components are calculated as:
+
+$$ o_t = σ\left( W_o[h_\left(t-1\right), x_t] + b_o\right) $$
+
+$$ h_t = o_t ⊙ tanh\left(C_t\right) $$
+
+where $W_o$ and $b_o$ are the weight matrix and bias term for the output gate, and ⊙ denotes element-wise multiplication.
+
+The cell state ($C_t$) is updated based on the forget gate and the input gate:
+
+$$ C_t = f_t ⊙ C_\left(t-1\right) + i_t⊙\bar{C_t} $$
+
+The gates carefully regulate the flow of information into, out of, and within the cell state, allowing the LSTM to learn long-range dependencies.
+
 ## Addressing the vanishing gradient problem
+
+The vanishing gradient problem is a significant hurdle in training deep neural networks, especially RNNs. During backpropagation, the gradients of the loss function with respect to the earlier layers can become extremely small as they are repeatedly multiplied by weights (which can be less than 1). This makes it difficult for the earlier layers to learn effectively, hindering the network's ability to capture long-range dependencies.
+
+LSTMs address this problem through their unique architecture, particularly the cell state and the gating mechanisms:
+
+1. Direct Pathway for Gradients: The cell state acts as a direct pathway for information to flow across time steps. When the forget gate decides to keep information (outputting a value close to 1), the gradient associated with that information can flow through the cell state with minimal attenuation. The additive nature of the cell state update ($$ C_t = f_t ⊙ C_\left(t-1\right) + i_t⊙\bar{C_t} $$) also helps in preserving the gradient flow.
+
+2. Gating Mechanisms Control Gradient Flow: The gates act as regulators for the gradient flow. The forget gate can prevent the gradient from vanishing by allowing relevant information and its associated gradient to persist over many time steps. Similarly, the input gate controls the introduction of new information and its gradient into the cell state. The output gate regulates how the cell state influences the hidden state and subsequently the gradients propagated back.
+
+By carefully controlling the flow of information and gradients through these gates and the cell state, LSTMs mitigate the vanishing gradient problem, enabling them to learn dependencies over much longer sequences compared to traditional RNNs. While LSTMs significantly alleviate this issue, they don't entirely eliminate it, and techniques like gradient clipping are still sometimes employed for further stability.
+
 ## LSTM model structure and function
+
+Here's how you can define a simple LSTM model using the Keras API in TensorFlow:
+
+```
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+
+def create_lstm_model(input_shape, units, output_units, activation='relu', recurrent_activation='sigmoid', output_activation='softmax'):
+    """
+    Creates a sequential LSTM model.
+
+    Args:
+        input_shape (tuple): The shape of the input data (timesteps, features).
+        units (int): The number of LSTM units (memory cells).
+        output_units (int): The number of output units in the final dense layer.
+        activation (str): Activation function for the dense layer before the output.
+        recurrent_activation (str): Activation function for the recurrent steps (default: 'sigmoid').
+        output_activation (str): Activation function for the final output layer (e.g., 'softmax' for classification).
+
+    Returns:
+        tf.keras.Model: The compiled LSTM model.
+    """
+    model = Sequential([
+        LSTM(units=units, input_shape=input_shape, activation='tanh', recurrent_activation=recurrent_activation, return_sequences=False),
+        Dense(units=output_units, activation=output_activation)
+    ])
+    return model
+
+# Example usage:
+timesteps = 20  # Length of the input sequence
+features = 5    # Number of features at each time step
+lstm_units = 64 # Number of LSTM units
+output_classes = 10 # For a classification task with 10 classes
+
+input_shape = (timesteps, features)
+lstm_model = create_lstm_model(input_shape, lstm_units, output_classes)
+
+# Compile the model
+lstm_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Print the model summary to see the architecture
+lstm_model.summary()
+```
+
+Explanation of the Code:
+
+1. **Import** Libraries: We import `tensorflow` and specific modules from `tensorflow.keras` for building the neural network.
+
+2. `create_lstm_model` **Function**:
+   - `input_shape`: This argument specifies the expected shape of the input sequences. For an LSTM, it's typically (`timesteps`, `features`). `timesteps` is the length of each sequence, and `features` is the number of input variables at each time step.
+   - `units`: This defines the number of LSTM units (memory cells) in the layer. This number determines the dimensionality of the hidden state and the cell state. More units can potentially capture more complex patterns but also increase the model's complexity and training time.
+   - `output_units`: This specifies the number of neurons in the final dense layer, which corresponds to the number of output classes in a classification task or a single output value in a regression task.
+   - `activation`: This is the activation function applied to the dense layer before the final output layer (e.g., 'relu', 'tanh').
+   - `recurrent_activation`: This is the activation function used for the recurrent steps within the LSTM (default is 'sigmoid' for the gates). The tanh activation is typically used for the candidate cell state and the hidden state calculation.
+   - `output_activation`: This is the activation function for the final output layer (e.g., 'softmax' for multi-class classification, 'sigmoid' for binary classification, or None/linear for regression).
+   - `Sequential`: We create a sequential model, where layers are added in a linear stack.
+   - `LSTM Layer`: This is the core LSTM layer
+     - `units`: Specifies the number of LSTM units.
+     - `input_shape`: Defines the shape of the input data (only needed for the first layer).
+     - `activation='tanh'`: The activation function used for the candidate cell state ($\bar{C_t}$) and the hidden state calculation.
+     - `recurrent_activation='sigmoid'`: The activation function used for the gates (forget, input, output).
+     - `return_sequences=False`: If set to `True`, the LSTM layer will output the hidden state for each time step in the input sequence. If `False` (default), it will only output the final hidden state. For many sequence classification or regression tasks, we only need the final output.
+   - `Dense` Layer: This is a standard fully connected layer that maps the output of the LSTM layer to the desired output dimension.
+
+3. **Example Usage**: We define example values for the input shape, LSTM units, and output classes.
+4. **Model Creation**: We call the create_lstm_model function to instantiate the LSTM model.
+5. **Compilation**: We compile the model, specifying the optimizer (e.g., 'adam'), the loss function (e.g., 'categorical_crossentropy' for multi-class classification), and the metrics to evaluate during training (e.g., 'accuracy').
+6. **model.summary()**: This prints a summary of the model architecture, including the number of layers, the output shape of each layer, and the number of trainable parameters.
+
+This code provides a basic structure for an LSTM model, which can be further customized by adding more LSTM layers (by setting `return_sequences=True` for intermediate LSTM layers), dropout layers for regularization, or other types of layers depending on the task.
 
 # 10. Practical Implementation
 ## Building LSTM models using TensorFlow
