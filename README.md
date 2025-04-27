@@ -17,16 +17,16 @@ Refer to [1. Difference between Machine Learning and Deep Learning.ipynb](https:
 
 ```mermaid
 graph TD
-    A(Artificial Intelligence (AI)) --> B(Machine Learning (ML));
-    B --> C(Deep Learning (DL));
-    B --> D[Other ML Techniques];
-    C --> E[Neural Networks with Multiple Layers];
+    A(Artificial_Intelligence_(AI)) --> B(Machine_Learning_(ML));
+    B --> C(Deep_Learning_(DL));
+    B --> D[Other_ML_Techniques];
+    C --> E[Neural_Networks_with_Multiple Layers];
     E --> F(CNNs);
     E --> G(RNNs);
     G --> H(LSTMs);
-    C --> I(Automatic Feature Extraction);
-    B -- Manual Feature Engineering --> D;
-    C -- Learns Features --> E;
+    C --> I(Automatic_Feature_Extraction);
+    B -- Manual_Feature_Engineering --> D;
+    C -- Learns_Features --> E;
 ```
 
 # 2. Environment Setup
