@@ -74,7 +74,7 @@ Jupyter Notebook provides an interactive environment for writing and running Pyt
 1. Open command prompt or terminal.
 2. Run the command: `pip install notebook`
 3. Open command prompt or terminal.
-4. Navigate to the directory where your notebooks are to be saved (or simply stay in the user directory).
+4. Navigate to the directory where notebooks are to be saved (or simply stay in the user directory).
 5. Run the command: `jupyter notebook`
 6. This will open a new tab in the web browser with the Jupyter Notebook interface. Create new Python 3 notebooks by clicking the "New" dropdown in the top right and selecting "Python 3 (ipykernel)".
 
@@ -220,12 +220,15 @@ In machine learning, data is often represented in multi-dimensional arrays. For 
 ## Implementing simple feedforward networks
 
 # 6. Convolutional Neural Networks (CNN)
+
 ## Using CNN for image recognition
 
 # 7. Recurrent Neural Networks (RNN)
 ## Understanding RNN for sequential data processing
 
-# 8. Hands-On Exercises
+# 8. Hands-On Exercises 
+
+##### TO BE FILLED IN #####
 
 # 9. LSTM Architecture
 ## Addressing the vanishing gradient problem
@@ -233,8 +236,176 @@ In machine learning, data is often represented in multi-dimensional arrays. For 
 
 # 10. Practical Implementation
 ## Building LSTM models using TensorFlow
+
+Long Short-Term Memory (LSTM) networks are a type of recurrent neural network (RNN) capable of learning long-range dependencies in sequential data. They are particularly well-suited for time series forecasting because they can remember past patterns and use them to predict future values.
+
+In TensorFlow, build LSTM models using the `tf.keras` API, which provides a high-level interface for building and training neural networks. The core building block for an LSTM layer is `tf.keras.layers.LSTM`.
+
+Here's a breakdown of the key components and how to build an LSTM model:
+
+1. `tf.keras.models.Sequential`: This is a linear stack of layers, a common way to build simple neural network architectures. Add layers sequentially to this model.
+2. `tf.keras.layers.LSTM(units, activation='tanh', return_sequences=False, stateful=False, ...)`: This is the [LSTM layer](https://www.tensorflow.org/api_docs/python/tf/keras/layers/LSTM) itself.
+3. `tf.keras.layers.Dense(units, activation=None)`: This is a fully connected layer. In the context of time series forecasting, the final `Dense` layer typically has `units=1` (for predicting a single future value) and may or may not have an activation function depending on the desired output range.
+4. Input Shape: The first layer in a `Sequential` model needs to know the shape of its input. For an LSTM layer, the input shape should be `(time_steps, features)`, where:
+   - `time_steps`: The number of time steps in each input sequence. This is how many past data points the model will look at to make a prediction.
+   - `features`: The number of features at each time step. For a univariate time series, this is typically 1. For multivariate time series, it's the number of different variables.
+
+Python Code Example (Univariate Time Series):
+```
+import tensorflow as tf
+
+# Define the model architecture
+def build_lstm_model(time_steps, features, lstm_units, dense_units):
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.LSTM(lstm_units, activation='tanh', input_shape=(time_steps, features)),
+        tf.keras.layers.Dense(dense_units),
+        tf.keras.layers.Dense(1) # Output layer for single value prediction
+    ])
+    return model
+
+# Example usage:
+time_steps = 20  # Look back 20 time steps
+features = 1     # Univariate time series
+lstm_units = 64  # Number of LSTM units
+dense_units = 32 # Number of units in the dense layer
+
+lstm_model = build_lstm_model(time_steps, features, lstm_units, dense_units)
+
+# Compile the model
+lstm_model.compile(optimizer='adam', loss='mse') # Mean Squared Error is common for regression
+
+# Print the model summary to see the architecture
+lstm_model.summary()
+```
+Python Code Example (Stacking LSTM Layers and Multivariate Time Series):
+```
+import tensorflow as tf
+
+# Define the model architecture with stacked LSTMs
+def build_stacked_lstm_model(time_steps, features, lstm_units_list, dense_units):
+    model = tf.keras.models.Sequential()
+    # First LSTM layer needs input shape
+    model.add(tf.keras.layers.LSTM(lstm_units_list[0], activation='tanh', return_sequences=True, input_shape=(time_steps, features)))
+    # Add subsequent LSTM layers, returning sequences for each except the last
+    for units in lstm_units_list[1:-1]:
+        model.add(tf.keras.layers.LSTM(units, activation='tanh', return_sequences=True))
+    # Last LSTM layer only returns the final output
+    model.add(tf.keras.layers.LSTM(lstm_units_list[-1], activation='tanh'))
+    model.add(tf.keras.layers.Dense(dense_units))
+    model.add(tf.keras.layers.Dense(1)) # Output layer for single value prediction
+    return model
+
+# Example usage:
+time_steps = 30  # Look back 30 time steps
+features = 3     # Multivariate time series with 3 features
+lstm_units_list = [64, 64] # Two stacked LSTM layers with 64 units each
+dense_units = 32
+
+stacked_lstm_model = build_stacked_lstm_model(time_steps, features, lstm_units_list, dense_units)
+
+# Compile the model
+stacked_lstm_model.compile(optimizer='adam', loss='mse')
+
+# Print the model summary
+stacked_lstm_model.summary()
+```
+
 ## Training LSTM on a time series dataset for dengue cases
+
+Once LSTM model has been built, the next step is to train it on time series data. This involves preparing the data and then using the `fit()` method of the TensorFlow model.
+
+**Data Preparation**:
+
+Time series data needs to be structured into sequences that the LSTM can learn from. This typically involves:
+1. Loading the Data: Load time series data (e.g., from a CSV file, database, or NumPy array).
+2. Scaling: It's often beneficial to scale time series data (e.g., using `MinMaxScaler` or `StandardScaler` from `sklearn.preprocessing`) to bring the values within a similar range. This can help the model converge faster and prevent issues with large gradients. Remember to scale the target variable (the value to be predicted) as well.
+3. Creating Sequences (Sliding Window): Create input-output pairs for training. For each sequence of `time_steps` past values, the target will be the next value (or a sequence of future values for more advanced forecasting). This can be done using a sliding window approach.
+
+```
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+
+# Sample univariate time series data
+time_series = np.array([10, 12, 15, 13, 16, 18, 20, 19, 22, 25, 23, 26, 28, 30, 29])
+time_series = time_series.reshape(-1, 1) # Reshape for scaling
+
+# Scale the data
+scaler = MinMaxScaler()
+scaled_data = scaler.fit_transform(time_series)
+
+# Define the number of time steps to look back
+time_steps = 3
+
+# Create sequences and targets
+def create_sequences(data, time_steps):
+    X, y = [], []
+    for i in range(len(data) - time_steps):
+        X.append(data[i:(i + time_steps)])
+        y.append(data[i + time_steps])
+    return np.array(X), np.array(y)
+
+X, y = create_sequences(scaled_data, time_steps)
+
+print("Shape of X (input sequences):", X.shape)
+print("Shape of y (target values):", y.shape)
+
+# Split the data into training and testing sets
+train_size = int(len(X) * 0.8)
+X_train, X_test = X[:train_size], X[train_size:]
+y_train, y_test = y[:train_size], y[train_size:]
+
+print("Shape of X_train:", X_train.shape)
+print("Shape of y_train:", y_train.shape)
+print("Shape of X_test:", X_test.shape)
+print("Shape of y_test:", y_test.shape)
+```
+
+**Training the Model**:
+Once data is prepared into input sequences (`X_train`) and corresponding target values (`y_train`), train LSTM model using the `fit()` method.
+
+```
+# Assuming lstm_model has been built and compiled (from the first section)
+# and prepared training data (X_train, y_train)
+
+# Train the model
+history = lstm_model.fit(
+    X_train,
+    y_train,
+    epochs=100,      # Number of training iterations
+    batch_size=32,   # Number of samples per gradient update
+    validation_split=0.2, # Fraction of the training data to be used as validation data
+    shuffle=False     # Important for time series data to avoid shuffling the order
+)
+
+# Access the training history (loss, validation loss)
+print(history.history.keys())
+
+import matplotlib.pyplot as plt
+
+# Plot training & validation loss values
+plt.plot(history.history['loss'], label='Train')
+plt.plot(history.history['val_loss'], label='Validation')
+plt.title('Model loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(loc='upper right')
+plt.show()
+```
+
+Important Considerations for Training:
+
+1. Epochs: The number of times the entire training dataset is passed forward and backward through the neural network. Experiment with different numbers of epochs.
+2. Batch Size: The number of training examples utilized in one iteration. Smaller batch sizes can lead to noisy gradients but may generalize better. Larger batch sizes can speed up training but might get stuck in local minima.
+3. Validation Set: It's crucial to have a separate validation set to monitor the model's performance on unseen data during training. This helps in tuning hyperparameters and preventing overfitting.
+4. Shuffle: For time series data, set `shuffle=False` in the `fit()` method to preserve the temporal order of the data. Shuffling can disrupt the sequential dependencies that the LSTM is trying to learn.
+5. Callbacks: TensorFlow provides callbacks that can be used during training for various purposes, such as early stopping (to prevent overfitting), saving the best model, and adjusting the learning rate.
+
+After training, evaluate model on the test data (`X_test`, `y_test`) using the `evaluate()` method and make predictions on new, unseen data using the `predict()` method. Remember to inverse transform the scaled predictions back to the original scale if data has been scaled.
+
+
 ## Developing a dengue forecasting model
+
+##### TO BE FILLED IN #####
 
 # 11. Model Evaluation and Deployment
 ## Evaluating model performance using appropriate metrics
@@ -244,7 +415,7 @@ When training a LSTM (Long Short-Term Memory) network, assess how well it's perf
 
 $$ MSE= \frac{1}{n} * \left( \sum_{i=1}^n (y_i - \hat{y_i})^2 \right) $$
 
-2. **Root Mean Squared Error (RMSE)**: The square root of the MSE, providing an error metric in the same units as your target variable, making it more interpretable.
+2. **Root Mean Squared Error (RMSE)**: The square root of the MSE, providing an error metric in the same units as the target variable, making it more interpretable.
 
 $$ RMSE= \sqrt{ \frac{1}{n} * \left( \sum_{i=1}^n (y_i - \hat{y_i})^2 \right) }$$
 
@@ -264,7 +435,7 @@ $$ MAPE = \frac{1}{n} * \left( \sum_{i=1}^n \left|\frac{y_i - \hat{y_i}}{y_i}\ri
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
 
-# Assume 'y_true' and 'y_pred' are your actual and predicted time series values
+# Assume 'y_true' and 'y_pred' are actual and predicted time series values
 y_true = np.array([10, 12, 15, 13, 18])
 y_pred = np.array([9.5, 11.8, 14.5, 13.2, 17.5])
 
@@ -292,19 +463,27 @@ Cloud Platforms (AWS, Google Cloud, Azure):
 1. Pros: Scalability, reliability, managed services, integration with other cloud services (databases, APIs, etc.).
 2. Cons: Can be costlier depending on usage, requires cloud infrastructure knowledge.
 3. Options:
-   - Serverless Functions (AWS Lambda, Google Cloud Functions, Azure Functions): Ideal for event-driven applications or APIs where you need on-demand inference without managing servers. You can package your model and prediction logic into a function.
-   - Containerized Deployment (Docker on ECS, GKE, AKS): Package your model and its dependencies into a Docker container and deploy it on a container orchestration service. This provides flexibility and scalability.
+   - Serverless Functions (AWS Lambda, Google Cloud Functions, Azure Functions): Ideal for event-driven applications or APIs where need on-demand inference without managing servers. Package model and prediction logic into a function.
+   - Containerized Deployment (Docker on ECS, GKE, AKS): Package model and its dependencies into a Docker container and deploy it on a container orchestration service. This provides flexibility and scalability.
    - Managed Machine Learning Services (AWS SageMaker, Google AI Platform, Azure Machine Learning): These platforms offer end-to-end ML workflows, including model deployment with features like auto-scaling, monitoring, and A/B testing.
-   - Virtual Machines (EC2, Compute Engine, Azure VMs): You can set up a virtual machine, install the necessary libraries, and run your model as a service. This gives you more control over the environment.
+   - Virtual Machines (EC2, Compute Engine, Azure VMs): Set up a virtual machine, install the necessary libraries, and run model as a service. This gives more control over the environment.
 
 Web Applications:
 1. Pros: Easy accessibility for users through a web browser.
 2. Cons: Requires building a web interface and backend infrastructure.
 3. Options:
-   - REST API (using Flask, FastAPI, Django REST Framework): Expose your trained model as an API endpoint. The web application can send data to the API and receive predictions. You can deploy the API on cloud platforms or a dedicated server.
-   - Streamlit or Gradio: These Python libraries allow you to quickly create interactive web interfaces for your machine learning models with minimal coding. They are great for demos and internal tools.
+   - REST API (using Flask, FastAPI, Django REST Framework): Expose trained model as an API endpoint. The web application can send data to the API and receive predictions. Deploy the API on cloud platforms or a dedicated server.
+   - Streamlit or Gradio: These Python libraries allow for quick creation of interactive web interfaces for machine learning models with minimal coding. They are great for demos and internal tools.
   
 Desktop Applications: Jupyter Notebook, Power BI Desktop, Tableau
+
+Considerations:
+1. Performance Requirements: Latency, throughput, and resource usage.
+2. Scalability: How will the deployment handle increasing load?
+3. Cost: Infrastructure costs, development effort.
+4. Security: Protecting model and data.
+5. Maintenance: Updating the model, monitoring performance.
+6. Ease of Use: How easy is it for end-users to interact with the deployed model?
 
 # 12. Advanced Techniques
 ## Model ensembling
@@ -374,7 +553,7 @@ In this example, create three identical LSTM models, train them independently, a
 
 ## Hyperparameter tuning
 
-Hyperparameters are parameters of a learning algorithm that are set prior to the learning process and control its behavior. Finding the optimal set of hyperparameters is crucial for achieving the best performance from your LSTM or neural network.
+Hyperparameters are parameters of a learning algorithm that are set prior to the learning process and control its behavior. Finding the optimal set of hyperparameters is crucial for achieving the best performance from the LSTM model or neural network.
 
 Here are some common hyperparameter tuning techniques:
 
