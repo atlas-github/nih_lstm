@@ -29,6 +29,16 @@ graph TD
     C -- Learns_Features --> E;
 ```
 
+1. Artificial Intelligence (AI): This is the broadest field, encompassing any technique that enables computers to mimic human intelligence.
+2. Machine Learning (ML): A subfield of AI that focuses on enabling computers to learn from data without being explicitly programmed. Instead of hard-coded rules, ML algorithms learn patterns and make predictions based on the data they are trained on.   
+3. Deep Learning (DL): A subfield of Machine Learning. The key characteristic of deep learning is the use of neural networks with multiple layers (hence "deep").
+4. Other ML Techniques: This branch represents the many other machine learning algorithms that are not deep learning. These include methods like Support Vector Machines (SVMs), Decision Trees, Naive Bayes, Linear Regression, and various clustering algorithms.
+5. Neural Networks with Multiple Layers: This is the core of deep learning. These networks consist of interconnected nodes (neurons) organized into multiple layers (input, hidden, and output layers). The "depth" refers to the number of hidden layers.
+6.Convolutional Neural Networks (CNNs): A specific type of deep neural network that is particularly well-suited for processing grid-like data, such as images. They use convolutional layers to automatically learn spatial hierarchies of features.   
+7. Recurrent Neural Networks (RNNs): Another type of deep neural network designed to handle sequential data, such as text, time series, and audio. They have feedback connections that allow them to maintain a "memory" of past inputs.
+8. Long Short-Term Memory Networks (LSTMs): A specific and powerful type of RNN architecture that is better at learning long-range dependencies in sequential data, overcoming some of the limitations of traditional RNNs.
+9. Feature Learning (Automatic Feature Extraction): A crucial aspect that differentiates deep learning from many traditional ML techniques. Deep learning models automatically learn relevant features from raw data through their multiple layers. Each layer progressively extracts higher-level and more abstract features.
+
 # 2. Environment Setup
 ## Installing and configuring Python
 ## Essential libraries for ML/DL (NumPy, Pandas, Matplotlib, TensorFlow, etc.)
