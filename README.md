@@ -238,7 +238,73 @@ In machine learning, data is often represented in multi-dimensional arrays. For 
 
 # 11. Model Evaluation and Deployment
 ## Evaluating model performance using appropriate metrics
+When training a LSTM (Long Short-Term Memory) network, assess how well it's performing. The choice of evaluation metrics depends heavily on the specific task your LSTM is designed for. Here are some common scenarios and their appropriate metrics for time-series forecasting:
+
+1. **Mean Squared Error (MSE)**: This is a classic metric that calculates the average of the squared differences between the predicted and actual values. It penalizes larger errors more heavily.
+
+$$ MSE= \frac{1}{n} * \left( \sum_{i=1}^n (y_i - \hat{y_i})^2 \right) $$
+
+2. **Root Mean Squared Error (RMSE)**: The square root of the MSE, providing an error metric in the same units as your target variable, making it more interpretable.
+
+$$ RMSE= \sqrt{ \frac{1}{n} * \left( \sum_{i=1}^n (y_i - \hat{y_i})^2 \right) }$$
+
+3. **Mean Absolute Error (MAE)**: This calculates the average of the absolute differences between the predicted and actual values. It's less sensitive to outliers compared to MSE.
+
+$$ MAE= \frac{1}{n} * \left( \sum_{i=1}^n |y_i - \hat{y_i}| \right) $$
+
+4. **R-squared** (Coefficient of Determination): This metric represents the proportion of the variance in the dependent variable that is predictable from the independent variables. A value closer to 1 indicates a better fit.
+
+$$ R^2 = 1- \left(\frac{\sum_{i=1}^n (y_i - \hat{y_i})^2}{\sum_{i=1}^n (y_i - \bar{y})^2} \right) $$, where $\bar{y}$ is the mean of the actual values.
+
+5. Mean Absolute Percentage Error (MAPE): This expresses the error as a percentage of the actual values. It's useful for understanding the relative size of the errors. Be cautious when actual values are close to zero, as MAPE can become very large.
+
+$$ MAPE = \frac{1}{n} * \left( \sum_{i=1}^n \left|\frac{y_i - \hat{y_i}}{y_i}\right| \right) $$
+
+```
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import numpy as np
+
+# Assume 'y_true' and 'y_pred' are your actual and predicted time series values
+y_true = np.array([10, 12, 15, 13, 18])
+y_pred = np.array([9.5, 11.8, 14.5, 13.2, 17.5])
+
+mse = mean_squared_error(y_true, y_pred)
+rmse = np.sqrt(mse)
+mae = mean_absolute_error(y_true, y_pred)
+r_squared = r2_score(y_true, y_pred)
+
+def mean_absolute_percentage_error(y_true, y_pred):
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
+mape = mean_absolute_percentage_error(y_true, y_pred)
+
+print(f"Mean Squared Error (MSE): {mse:.4f}")
+print(f"Root Mean Squared Error (RMSE): {rmse:.4f}")
+print(f"Mean Absolute Error (MAE): {mae:.4f}")
+print(f"R-squared (R2): {r_squared:.4f}")
+print(f"Mean Absolute Percentage Error (MAPE): {mape:.4f}%")
+```
+
 ## Deploying the trained LSTM model
+
+Cloud Platforms (AWS, Google Cloud, Azure):
+1. Pros: Scalability, reliability, managed services, integration with other cloud services (databases, APIs, etc.).
+2. Cons: Can be costlier depending on usage, requires cloud infrastructure knowledge.
+3. Options:
+   - Serverless Functions (AWS Lambda, Google Cloud Functions, Azure Functions): Ideal for event-driven applications or APIs where you need on-demand inference without managing servers. You can package your model and prediction logic into a function.
+   - Containerized Deployment (Docker on ECS, GKE, AKS): Package your model and its dependencies into a Docker container and deploy it on a container orchestration service. This provides flexibility and scalability.
+   - Managed Machine Learning Services (AWS SageMaker, Google AI Platform, Azure Machine Learning): These platforms offer end-to-end ML workflows, including model deployment with features like auto-scaling, monitoring, and A/B testing.
+   - Virtual Machines (EC2, Compute Engine, Azure VMs): You can set up a virtual machine, install the necessary libraries, and run your model as a service. This gives you more control over the environment.
+
+Web Applications:
+1. Pros: Easy accessibility for users through a web browser.
+2. Cons: Requires building a web interface and backend infrastructure.
+3. Options:
+   - REST API (using Flask, FastAPI, Django REST Framework): Expose your trained model as an API endpoint. The web application can send data to the API and receive predictions. You can deploy the API on cloud platforms or a dedicated server.
+   - Streamlit or Gradio: These Python libraries allow you to quickly create interactive web interfaces for your machine learning models with minimal coding. They are great for demos and internal tools.
+  
+Desktop Applications: Jupyter Notebook, Power BI Desktop, Tableau
 
 # 12. Advanced Techniques
 ## Model ensembling
