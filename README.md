@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> [Deep Dive into Deep Learning](https://d2l.ai/chapter_recurrent-modern/lstm.html)
+
 # 1. Introduction to Deep Learning
 
 Deep learning is a subfield of machine learning that uses artificial neural networks with multiple layers (hence, "deep") to progressively extract higher-level features from raw input data.
