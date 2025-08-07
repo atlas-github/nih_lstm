@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> [Deep Dive into Deep Learning](https://d2l.ai/chapter_recurrent-modern/lstm.html)
+> [Deep Dive into Deep Learning (LSTM)](https://d2l.ai/chapter_recurrent-modern/lstm.html)
 
 # 1. Introduction to Deep Learning
 
